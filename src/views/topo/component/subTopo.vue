@@ -5,7 +5,7 @@
 </template>
   
 <script>
-import options from "../jsondata/subdata"
+import options from "../../../jsondata/subdata"
 import * as d3 from "d3"
 export default {
   name: 'TopoIndex',
@@ -329,8 +329,8 @@ export default {
   justify-content: center;
 }
 #subtogo {
-  /* width: 100%; */
-  /* height: 500px; */
+  width: 100%;
+  height: 500px;
   border: 1px solid #ccc;
   user-select: none;
 }

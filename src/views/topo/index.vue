@@ -1,6 +1,6 @@
 <template>
-  <div class="topoindex">
-    <svg id="togo" width="1200" height="500" />
+  <div>
+    <svg id="topo" width="1800" height="700" />
     <el-dialog
       center
       title="节点详情"
@@ -19,18 +19,14 @@
 </template>
 
 <script>
-import options from "../jsondata/data"
+import options from "../../jsondata/data"
 import * as d3 from "d3"
-import subTopo from "./subTopo"
+import subTopo from "./component/subTopo"
 export default {
-  name: 'TopoIndex',
-  props: {
-    msg: String
-  },
+  name: 'topo',
   data () {
     return {
       dialogVisible: false,
-      key1: '123',
       subTopo: false
     }
   },
@@ -39,15 +35,8 @@ export default {
   },
   methods: {
     handleClose () {
-      // this.$confirm('确认关闭？')
-      //   .then(() => {
-
-      //     this.dialogVisible = false
-      //   })
-      //   .catch(() => { });
       this.dialogVisible = false
       this.subTopo = false
-      console.log("关闭")
     }
   }
   ,
@@ -56,27 +45,25 @@ export default {
     const symbolSize = 40;
     const padding = 10;
     const that = this
-    class Togo {
-      /**/
+    class Topo {
       constructor(svg, option) {
         this.data = option.data;
         this.edges = option.edges;
         this.svg = d3.select(svg);
-
       }
 
       //初始化节点位置
       initPosition () {
         let width = this.svg.attr('width');
+        let height = this.svg.attr('height');
         let points = this.getVertices(this.data.length);
         this.data.forEach((item, i) => {
-          // 加上width/2是为了让所有节点的位置在中间
-          item.x = points[i].x + width / 3;
-          item.y = points[i].y;
+          item.x = points[i].x + width / 4;
+          item.y = points[i].y + height / 9;
         })
       }
 
-      //根据节点的个数，生成矩形阵列中所有节点的定位坐标[{x:..,y:...},...]
+      //根据节点的个数，生成矩形阵列(即配置节点的摆放位置),返回的points为节点的定位坐标[{x:..,y:...},...]
       getVertices (n) {
         if (typeof n !== 'number') return;
         var i = 0;
@@ -99,23 +86,18 @@ export default {
         return points;
       }
 
-      // // 计算两点的中心点
-      // getCenter (x1, y1, x2, y2) {
-      //   return [(x1 + x2) / 2, (y1 + y2) / 2]
-      // }
+      // 计算两点的中心点(用于确认摆放在连接线上的文字的位置)
+      getCenter (x1, y1, x2, y2) {
+        return [(x1 + x2) / 2, (y1 + y2) / 2]
+      }
 
-      // // 计算两点的距离
-      // getDistance (x1, y1, x2, y2) {
-      //   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-      // }
-
-      // // 计算两点角度
-      // getAngle (x1, y1, x2, y2) {
-      //   var x = Math.abs(x1 - x2);
-      //   var y = Math.abs(y1 - y2);
-      //   var z = Math.sqrt(x * x + y * y);
-      //   return Math.round((Math.asin(y / z) / Math.PI * 180));
-      // }
+      // 计算两点角度
+      getAngle (x1, y1, x2, y2) {
+        var x = Math.abs(x1 - x2);
+        var y = Math.abs(y1 - y2);
+        var z = Math.sqrt(x * x + y * y);
+        return Math.round((Math.asin(y / z) / Math.PI * 180));
+      }
 
       // 初始化缩放器
       initZoom () {
@@ -194,7 +176,6 @@ export default {
         earth.selectAll("path")
           .attr('style', "fill:#297aff")
 
-
         // docker
         let docker = defs.append('g')
           .attr('id', "docker")
@@ -208,20 +189,13 @@ export default {
         docker.append("path")
           .attr("d", "m 54.869333,387.88267 h 97.109337 v 97.152 H 54.912 V 387.84 m 129.49333,0 h 97.10934 v 97.152 h -97.152 V 387.84 m 0,-129.49333 H 281.472 v 97.152 h -97.10933 v -97.10934 m 129.57866,0 h 97.152 v 97.152 h -97.152 v -97.152 m 0,129.49334 h 97.152 v 97.152 h -97.152 V 387.84 m 129.49334,0 h 97.152 v 97.152 h -97.152 V 387.84 m 129.57866,0 h 97.152 v 97.152 h -97.152 V 387.84 M 443.43467,258.34667 h 97.152 v 97.152 h -97.152 v -97.10934 m 0,-129.57866 h 97.152 v 97.152 h -97.152 v -97.152")
           .attr("style", "fill:#2bb558")
-
-
-
-
-
-
-    
-    }
+      }
 
       // 
       //初始化链接线
       initLink () {
         this.drawLinkLine();
-        // this.drawLinkText();
+        this.drawLinkText();
       }
 
       //初始化节点
@@ -238,13 +212,11 @@ export default {
           .call(d3.drag()
             // 给每一个节点添加拖拽事件
             .on("drag", function (d) {
-              console.log("111")
               self.onDrag(this, d)
             })
           )
           // 给每一个节点添加点击事件
-          .on('click', function (d) {
-            console.log(d.name)
+          .on('click', function () {
             that.dialogVisible = true
           })
         //节点背景默认背景层
@@ -256,16 +228,12 @@ export default {
         this.drawNodeSymbol();
         //节点标题
         this.drawNodeTitle();
-        //节点其他说明
-        // this.drawNodeOther();
         // 节点旁边的小图标
         this.drawNodeCode();
-        // this.drawNodeCode("cloud");
-        // this.drawNodeCode("earth");
-        // this.drawNodeCode("app");
 
       }
-      // 画节点是否配置完成标识
+
+      // 绘制配置完成标识
       drawNodeCode () {
         this.nodeCodes = this.nodes.filter(item => item.isConfig == "true")
           .append('g')
@@ -282,12 +250,10 @@ export default {
           // .text(item => item.code);
           .attr("style", "font-size:14px;line-height:14px")
           .text("√");
-
       }
 
-      //画节点图标
+      //绘制节点图标
       drawNodeSymbol () {
-        //绘制圆点图标
         this.nodes.filter(item => item.type == 'app')
           .append("circle")
           .attr("r", symbolSize / 2)
@@ -352,32 +318,8 @@ export default {
           })
       }
 
-      // 填写节点右侧信息
-      // drawNodeOther() {
-      //   //如果是应用的时候
-      //   this.nodeOthers = this.nodes.filter(item => item.type == 'app')
-      //     .append("text")
-      //     .attr("x", symbolSize / 2 + padding)
-      //     .attr("y", -5)
-      //     .attr('class', 'node-other')
-
-      //   this.nodeOthers.append('tspan')
-      //     .text(d => d.time + 'ms');
-
-      //   this.nodeOthers.append('tspan')
-      //     .text(d => d.rpm + 'rpm')
-      //     .attr('x', symbolSize / 2 + padding)
-      //     .attr('dy', '1em');
-
-      //   this.nodeOthers.append('tspan')
-      //     .text(d => d.epm + 'epm')
-      //     .attr('x', symbolSize / 2 + padding)
-      //     .attr('dy', '1em')
-      // }
-
       //画节点标题
       drawNodeTitle () {
-        console.log(this.nodes)
         //节点标题
         this.nodes.append("text")
           .attr('class', 'node-title')
@@ -404,6 +346,7 @@ export default {
               'd', link => genLinkPath(link),
             )
         } else {
+          console.log(this.edges)
           this.lineGroup = this.container.append('g')
           this.lineGroup.selectAll('.link')
             .data(this.edges)
@@ -419,7 +362,7 @@ export default {
             )
         }
 
-        // 连接线路的路径(走线)
+        // 确认连接线的路径
         function genLinkPath (d) {
           let sx = data[d.source].x;
           let tx = data[d.target].x;
@@ -427,60 +370,57 @@ export default {
           let ty = data[d.target].y;
           return 'M' + sx + ',' + sy +
             ' L' + tx + ',' + ty
-
         }
       }
 
       //画节点链接线文字
-      // drawLinkText () {
-      //   let data = this.data;
-      //   let self = this;
-      //   if (this.lineTextGroup) {
-      //     this.lineTexts
-      //       .attr('transform', getTransform)
+      drawLinkText () {
+        let data = this.data;
+        let self = this;
+        if (this.lineTextGroup) {
+          this.lineTexts
+            .attr('transform', getTransform)
+        } else {
+          this.lineTextGroup = this.container.append('g')
 
-      //   } else {
-      //     this.lineTextGroup = this.container.append('g')
+          this.lineTexts = this.lineTextGroup
+            .selectAll('.linetext')
+            .data(this.edges)
+            .enter()
+            .append('text')
+            .attr('dy', -2)
+            .attr('transform', getTransform)
+            .on('click', () => { alert() })
 
-      //     this.lineTexts = this.lineTextGroup
-      //       .selectAll('.linetext')
-      //       .data(this.edges)
-      //       .enter()
-      //       .append('text')
-      //       .attr('dy', -2)
-      //       .attr('transform', getTransform)
-      //       .on('click', () => { alert() })
+          this.lineTexts
+            .append('tspan')
+            .text((d) => this.data[d.source].upwardText);
 
-      //     this.lineTexts
-      //       .append('tspan')
-      //       .text((d) => this.data[d.source].lineTime + 'ms,' + this.data[d.source].lineRpm + 'rpm');
+          this.lineTexts
+            .append('tspan')
+            .text((d) => this.data[d.source].underText)
+            .attr('dy', '1em')
+            .attr('dx', function () {
+              return -this.getBBox().width / 2
+            })
+        }
 
-      //     this.lineTexts
-      //       .append('tspan')
-      //       .text((d) => this.data[d.source].lineProtocol)
-      //       .attr('dy', '1em')
-      //       .attr('dx', function () {
-      //         return -this.getBBox().width / 2
-      //       })
-      //   }
-
-      //   function getTransform (link) {
-      //     let s = data[link.source];
-      //     let t = data[link.target];
-      //     let p = self.getCenter(s.x, s.y, t.x, t.y);
-      //     let angle = self.getAngle(s.x, s.y, t.x, t.y);
-      //     if (s.x > t.x && s.y < t.y || s.x < t.x && s.y > t.y) {
-      //       angle = -angle
-      //     }
-      //     return 'translate(' + p[0] + ',' + p[1] + ') rotate(' + angle + ')'
-      //   }
-      // }
+        function getTransform (link) {
+          let s = data[link.source];
+          let t = data[link.target];
+          let p = self.getCenter(s.x, s.y, t.x, t.y);
+          let angle = self.getAngle(s.x, s.y, t.x, t.y);
+          if (s.x > t.x && s.y < t.y || s.x < t.x && s.y > t.y) {
+            angle = -angle
+          }
+          return 'translate(' + p[0] + ',' + p[1] + ') rotate(' + angle + ')'
+        }
+      }
 
       // 更新视图(图标位置和连接线)
-      update (d) {
+      update () {
         this.drawLinkLine();
-        // this.drawLinkText();
-        console.log(d)
+        this.drawLinkText();
       }
 
       //拖拽方法
@@ -490,7 +430,7 @@ export default {
         d.y = d3.event.y;
         d3.select(ele)
           .attr('transform', "translate(" + d3.event.x + "," + d3.event.y + ")")
-        this.update(d);
+        this.update();
       }
 
       //缩放方法
@@ -505,27 +445,24 @@ export default {
       //主渲染方法
       render () {
         this.scale = 1;
-        // 准备svg画布
-        this.width = this.svg.attr('width');
-        this.height = this.svg.attr('height');
+        // 操作svg画布
         this.container = this.svg.append('g')
           .attr('transform', 'scale(' + this.scale + ')')
-
-
-
         // 执行类中定义的方法
         // 1.获取所有节点位置数据
         this.initPosition();
         // 2.初始化图标数据
         this.initDefineSymbol();
-        // 3. 初始化连接线的信息
+        // 3.初始化连接线的信息
         this.initLink();
-        // 4. 初始化节点
+        // 4.初始化节点
         this.initNode();
+        // 5.初始化缩放
         this.initZoom();
       }
     }
-    let t = new Togo('#togo', options);
+
+    let t = new Topo('#topo', options);
     t.render();
 
   }
@@ -533,62 +470,60 @@ export default {
 </script>
 
 <style >
-#togo {
-  width: 100%;
-  height: 500px;
+#topo {
   border: 1px solid #ccc;
   user-select: none;
 }
 
-#togo text {
+#topo text {
   font-size: 10px;
   /*和js里保持一致*/
   fill: #1a2c3f;
   text-anchor: middle;
 }
 
-#togo .node-other {
+#topo .node-other {
   text-anchor: start;
 }
 
-#togo .health1 {
+#topo .health1 {
   stroke: #92e1a2;
 }
 
-#togo .health2 {
+#topo .health2 {
   stroke: orange;
 }
 
-#togo .health3 {
+#topo .health3 {
   stroke: red;
 }
 
-#togo #cloud,
-#togo #database {
+#topo #cloud,
+#topo #database {
   fill: #ccc;
 }
 
-#togo .link {
+#topo .link {
   stroke: black;
 }
 
-#togo .node-title {
+#topo .node-title {
   font-size: 14px;
 }
 
-#togo .node-code circle {
+#topo .node-code circle {
   fill: green;
 }
 
-#togo .node-code text {
+#topo .node-code text {
   fill: #fff;
 }
 
-#togo .node-bg {
+#topo .node-bg {
   fill: #fff;
 }
 
-#togo .arrow {
+#topo .arrow {
   fill: black;
 }
 </style>
