@@ -12,9 +12,7 @@
     "d3": "^5.16.0",
     "dagre-d3": "^0.6.4",
     "element-ui": "^2.13.2",
-    "jquery": "^3.5.1",
     "less-loader": "^6.1.0",
-    "vfd": "^1.0.5",
     "vue": "^2.6.11",
     "vue-router": "^3.3.2"
   },
@@ -25,6 +23,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "jquery": "^3.6.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

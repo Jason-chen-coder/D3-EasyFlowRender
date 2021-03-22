@@ -10,13 +10,15 @@
       title="节点详情"
       :visible.sync="dialogVisible"
       width="50%"
-      @closed="subDialogVisible=false"
-      @open="subDialogVisible=true"
+      @closed="subDialogVisible = false"
+      @open="subDialogVisible = true"
     >
       <sub-topo v-if="subDialogVisible" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="dialogVisible = false"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
     <svg width="1800" height="700">
@@ -140,8 +142,6 @@ export default {
 <style lang="less">
 svg {
   font-size: 14px;
-  height: 700px;
-  width: 1800px;
   border: 1px solid #000;
 }
 

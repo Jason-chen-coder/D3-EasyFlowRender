@@ -1,18 +1,21 @@
 <template>
-  <div>
-    <svg id="topo" width="1800" height="700" />
+  <div style="height: 100%">
+    <svg id="topo" width="1800" height="1000" />
+    <svg id="fillgauge1" width="97%" height="250"></svg>
     <el-dialog
       center
       title="节点详情"
       :visible.sync="dialogVisible"
       width="50%"
-      @closed="subTopo=false"
-      @open="subTopo=true"
+      @closed="subTopo = false"
+      @open="subTopo = true"
     >
       <sub-topo v-if="subTopo" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="dialogVisible = false"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -37,7 +40,7 @@ export default {
     handleClose () {
       this.dialogVisible = false
       this.subTopo = false
-    }
+    },
   }
   ,
   mounted () {
@@ -254,14 +257,82 @@ export default {
 
       //绘制节点图标
       drawNodeSymbol () {
-        this.nodes.filter(item => item.type == 'app')
-          .append("circle")
-          .attr("r", symbolSize / 2)
-          .attr("fill", '#fff')
-          .attr('class', function (d) {
-            return 'health' + d.health;
-          })
-          .attr('stroke-width', '5px')
+        // this.nodes.filter(item => item.type == 'app')
+        //   .append("circle")
+        //   .attr("r", symbolSize / 2)
+        //   .attr("fill", '#fff')
+        //   .attr('class', function (d) {
+        //     return 'health' + d.health;
+        //   })
+        //   .attr('stroke-width', '5px')
+
+        // var color = colors.pink;
+        var arc = d3.arc()
+          .startAngle(0)
+          .innerRadius(25)
+          .outerRadius(25 - 5);
+
+        var parent = this.nodes.filter(item => item.type == 'app')
+
+        // var svg = parent.append('svg')
+        //   .attr('width', boxSize)
+        //   .attr('height', boxSize)
+        //   .attr('x', function () {
+        //     return -this.getBBox().width
+        //   })
+        //   .attr('y', function () {
+        //     return -this.getBBox().height
+        //   })
+
+        var defs = parent.append('defs');
+
+        var filter = defs.append('filter')
+          .attr('id', 'blur');
+
+        filter.append('feGaussianBlur')
+          .attr('in', 'SourceGraphic')
+          .attr('stdDeviation', '7');
+
+        var g = parent.append('g')
+          .attr('transform', 'translate(' - symbolSize / 2 + ',' - symbolSize / 2 + ')');
+
+        var meter = g.append('g')
+          .attr('class', 'progress-meter');
+
+        meter.append('path')
+          .attr('class', 'background')
+          .attr('fill', '#ccc')
+          .attr('fill-opacity', 0.9)
+          .attr('d', arc.endAngle(Math.PI * 2));
+
+        var foreground = meter.append('path')
+          .attr('class', 'foreground')
+          .attr('fill', (data) => { return data.health === 1 ? '#92e1a2' : (data.health === 2 ? 'orange' : 'red') })
+          .attr('fill-opacity', 1)
+          .attr('stroke', (data) => { return data.health === 1 ? '#92e1a2' : (data.health === 2 ? 'orange' : 'red') })
+          .attr('stroke-width', 3)
+          .attr('stroke-opacity', 1)
+        // .attr('filter', 'url(#blur)');//泛光
+
+        var front = meter.append('path')
+          .attr('class', 'foreground')
+          .attr('fill', (data) => { return data.health === 1 ? '#92e1a2' : (data.health === 2 ? 'orange' : 'red') })
+          .attr('fill-opacity', 1);
+
+        var numberText = meter.append('text')
+          .attr('fill', '#fff')
+          .attr('text-anchor', 'middle')
+          .attr('dy', '.35em');
+        console.log('foreground', foreground)
+        foreground.attr('d', (data) => arc.endAngle(Math.PI * 2 * (data.active / data.total)));
+        front.attr('d', (data) => arc.endAngle(Math.PI * 2 * (data.active / data.total))());
+        numberText.text((d) => {
+          return (d.active / d.total) * 100 + "%";
+        });
+
+
+
+
 
         // 在<defs>元素中定义的图形不会直接显示在SVG图像上。要显示它们需要使用<use>元素来引入它们
         // <use>元素通过xlink:href属性来引入<g>元素。注意在ID前面要添加一个#。
@@ -327,14 +398,13 @@ export default {
             return d.name;
           })
           .attr("dy", symbolSize)
-        // 处理节点图标中的百分比
-        this.nodes.filter(item => item.type == 'app').append("text")
-          .text(function (d) {
-            return (d.active / d.total) * 100 + "%";
-          })
-          .attr('dy', fontSize / 2)
-          .attr('class', 'node-call')
-
+        //   // 处理节点图标中的百分比
+        //   this.nodes.filter(item => item.type == 'app').append("text")
+        //     .text(function (d) {
+        //       return (d.active / d.total) * 100 + "%";
+        //     })
+        //     .attr('dy', fontSize / 2)
+        //     .attr('class', 'node-call')
       }
 
       // 画节点链接线
@@ -346,7 +416,6 @@ export default {
               'd', link => genLinkPath(link),
             )
         } else {
-          console.log(this.edges)
           this.lineGroup = this.container.append('g')
           this.lineGroup.selectAll('.link')
             .data(this.edges)
@@ -464,7 +533,6 @@ export default {
 
     let t = new Topo('#topo', options);
     t.render();
-
   }
 }
 </script>
