@@ -1,7 +1,6 @@
 <template>
   <div style="height: 100%">
     <svg id="topo" width="1800" height="1000" />
-    <svg id="fillgauge1" width="97%" height="250"></svg>
     <el-dialog
       center
       title="节点详情"
