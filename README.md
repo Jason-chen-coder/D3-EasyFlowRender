@@ -1,5 +1,8 @@
 # topodemo
 
+# 项目预览
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200621131030690.gif#pic_center)
+
 1. D3的简介
 
 D3 全名为 Data Drive Document，即通过 Data 操作 Document，而在做数据可视化时，Data 最常 Drive 的 Document 便是 SVG。刚了解到D3时,看到D3官网非常丰富且酷炫的Demo,便觉得 D3 应该有着无限可能的图形开发能力,所以在学习完基础的API和SVG的基础后,就开始着手绘制D3的节点拓扑图了;
