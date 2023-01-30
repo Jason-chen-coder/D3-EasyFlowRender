@@ -3,15 +3,15 @@
 # 项目预览
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200621131030690.gif#pic_center)
 
-1. D3的简介
+## 1. D3的简介
 
 D3 全名为 Data Drive Document，即通过 Data 操作 Document，而在做数据可视化时，Data 最常 Drive 的 Document 便是 SVG。刚了解到D3时,看到D3官网非常丰富且酷炫的Demo,便觉得 D3 应该有着无限可能的图形开发能力,所以在学习完基础的API和SVG的基础后,就开始着手绘制D3的节点拓扑图了;
 
-2. 绘制简易的可拖拽节点拓扑图
+## 2. 绘制简易的可拖拽节点拓扑图
 
-4.1 准备工作:
+### 2.1 准备工作:
 
-5) 安装D3:
+1) 安装D3:
 ```bash
 npm install d3 --save
 ```
@@ -29,9 +29,9 @@ options对象含两个属性data和edges;data保存节点信息,edges保存节�
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200621130455281.png)
 
-2.2 开始绘制
+### 2.2 开始绘制
 
-1.在html结构中准备好svg画布
+#### 1.在html结构中准备好svg画布
 
 ```html
 <template>
@@ -41,7 +41,7 @@ options对象含两个属性data和edges;data保存节点信息,edges保存节�
 </template>
 ```
 
-2. 在mounted生命周期中:
+#### 2. 在mounted生命周期中:
 
 4)先定义好准备使用的常量
 
@@ -477,7 +477,7 @@ class Topo {
     t.render();
 ```
 
-3.样式部分
+#### 3.样式部分
 
 ```css
 <style >
@@ -542,23 +542,23 @@ class Topo {
 ```
 
 
-4.拓扑图最终效果
+#### 4.拓扑图最终效果
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200621130912882.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl8zOTA4NTgyMg==,size_16,color_FFFFFF,t_70)
 
-5.总结:
+#### 5.总结:
 
 该demo虽然元素比较齐全,但是节点之间的连线点到点直线相连的,若数据量一大节点数量多的话整个topo图的线路会比较杂乱影响观感
 
-3. 完善拓扑图
+## 3. 完善拓扑图
 
 在调研D3.js过程中,找到了基于D3的类库-dagre-d3;在学习和使用中，随着不断的深入，对于这个类库有了充分的了解，在查看完相关文档之后将其总结一下。
 
-3.1 关于dagre-d3:
+### 3.1 关于dagre-d3:
 
 Dagre是一个能够在客户端轻松创建流程图的JavaScript类库，而dagre-d3可以理解为是Dagre的前端，它使用D3来进行渲染。
 
-3.2 dagre-d3主要函数:
+### 3.2 dagre-d3主要函数:
 
 具体的用法建议直接看d3-dagre源码，这样不会有漏，这里列举下主要函数：
 
@@ -593,7 +593,7 @@ this.graph.removeEdge(v,s)
 
 demo中的拖拽、缩放功能还是通过D3实现，
 
- 3.1 准备工作:
+###  3.1 准备工作:
  
 安装dagre-d3:
 ```bash
@@ -601,10 +601,10 @@ npm i dagre-d3 --save
 ```
 
 
-  3.2 开始绘制
-  
+### 3.2 开始绘制
+
+#### 1.html结构
 ```html
-1.html结构
 <template>
   <div>
     <button @click="turnDir('LR')">从左至右</button>
@@ -633,7 +633,7 @@ npm i dagre-d3 --save
 
 ```
 
-2.js部分
+#### 2.js部分
 
 treetopo中模拟的数据结构:
 
@@ -749,7 +749,7 @@ export default {
 </script>
 ```
 
-3.css样式
+#### 3.css样式
 
 ```css
 <style lang="less">
@@ -841,12 +841,12 @@ foreignObject {
 ```
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200621131030690.gif#pic_center)
 
-总体设计思路:
+# 总体设计思路:
 
 
-1.先使用dagre-d3渲染出基础的拓扑图,
+## 1.先使用dagre-d3渲染出基础的拓扑图,
 
-2.每一个节点内显示的内容使用i标签代替;并在i标签内插入图标素材,根据不同数据插入不同的图片和标题),
+## 2.每一个节点内显示的内容使用i标签代替;并在i标签内插入图标素材,根据不同数据插入不同的图片和标题),
 
 ## Project setup
 ```
